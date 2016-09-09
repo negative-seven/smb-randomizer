@@ -17,6 +17,7 @@ ret
 
 #include <conio.h>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <windows.h>
 
@@ -29,6 +30,8 @@ int main()
 	HANDLE handle_process;
 	const std::string windowName = "Super Meat Boy";
 	const std::string processName = "SuperMeatBoy.exe";
+	std::string seed_input;
+	unsigned int seed;
 	std::vector<std::string> levelNames;
 	std::vector<char> temp;
 	unsigned int baseAddress, pointer1, pointer2, pointer3;
@@ -50,6 +53,41 @@ int main()
 	catch (std::exception e)
 	{
 		std::cout << "Super Meat Boy window not found.\nRestart this program with the game open.\n";
+		_getch();
+		return 0;
+	}
+
+	//// Get seed as input.
+
+	std::cout << "Input seed [\"r\" = random seed]:\n";
+	std::cin >> seed_input;
+	try
+	{
+		if (seed_input == "r")
+		{
+			seed = randomInt();
+			std::cout << "Using seed: " << seed << ".\n";
+		}
+
+		else
+		{
+			seed = std::stoul(seed_input);
+
+			if (seed > UINT_MAX || seed_input.substr(0, 1) == "-")
+			{
+				throw std::invalid_argument("");
+			}
+		}
+	}
+	catch (std::invalid_argument)
+	{
+		std::cout << "Input must be \"r\" or an integer between 0 and 4294967295.\n";
+		_getch();
+		return 0;
+	}
+	catch (std::out_of_range)
+	{
+		std::cout << "Input must be \"r\" or an integer between 0 and 4294967295.\n";
 		_getch();
 		return 0;
 	}
@@ -171,7 +209,7 @@ int main()
 
 	// Write to level name pointers
 
-	pointers_new = randomizeInts(pointers_new, randomInt());
+	pointers_new = randomizeInts(pointers_new, seed);
 
 	for (int i = 0; i < pointers_new.size(); i++)
 	{
