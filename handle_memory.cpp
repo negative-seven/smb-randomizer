@@ -1,4 +1,5 @@
 #include <psapi.h>
+#include <vector>
 #include <windows.h>
 
 HANDLE openProcess(std::string windowName)
@@ -59,7 +60,7 @@ int getBaseAddress(HANDLE handle_process, std::string processName)
 	return -1;
 }
 
-int readMemoryInt(HANDLE handle_process, int address, int dataSize = 4)
+int readMemoryInt(HANDLE handle_process, int address, unsigned int dataSize = 4)
 {
 	int value = 0;
 
@@ -69,6 +70,22 @@ int readMemoryInt(HANDLE handle_process, int address, int dataSize = 4)
 	}
 
 	return value;
+}
+
+std::vector<char> readMemoryBytes(HANDLE handle_process, int address, unsigned int dataSize = 1)
+{
+	std::vector<char> values;
+	values.resize(dataSize);
+
+	for (unsigned int i = 0; i < dataSize; i++)
+	{
+		if (!ReadProcessMemory(handle_process, (LPVOID)(address + i), &values[i], 1, NULL))
+		{
+			throw std::runtime_error("Could not read from memory.");
+		}
+	}
+
+	return values;
 }
 
 std::string readMemoryString(HANDLE handle_process, int address, unsigned int dataSize = -1)
@@ -95,10 +112,21 @@ std::string readMemoryString(HANDLE handle_process, int address, unsigned int da
 	return value;
 }
 
-void writeMemoryInt(HANDLE handle_process, int address, int value, int dataSize = 4)
+void writeMemoryInt(HANDLE handle_process, int address, int value)
 {
-	if (!WriteProcessMemory(handle_process, (LPVOID)address, &value, dataSize, NULL))
+	if (!WriteProcessMemory(handle_process, (LPVOID)address, &value, 4, NULL))
 	{
 		throw std::runtime_error("Could not write to memory.");
+	}
+}
+
+void writeMemoryBytes(HANDLE handle_process, int address, std::vector<char> values)
+{
+	for (unsigned int i = 0; i < values.size(); i++)
+	{
+		if (!WriteProcessMemory(handle_process, (LPVOID)(address + i), &values[i], 1, NULL))
+		{
+			throw std::runtime_error("Could not write to memory.");
+		}
 	}
 }
