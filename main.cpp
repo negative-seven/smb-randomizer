@@ -22,8 +22,8 @@ ret
 #include <windows.h>
 
 #include "get_level_data.cpp"
-#include "handle_memory.cpp"
-#include "randomize.cpp"
+#include "handle_memory.h"
+#include "randomize.h"
 
 int main()
 {
