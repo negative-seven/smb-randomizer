@@ -6,5 +6,6 @@ Note: This will not update any Steam leaderboard best times, only your save file
 [Download link](https://github.com/negative-seven/smb-randomizer/releases)
 
 ## Known issues
-* Touching a warp zone may crash the game.
+* Touching a warp zone may freeze the game.
+* Finishing a warp zone may freeze the game.
 * Bandage Girl sprite is larger in warp zone levels.
