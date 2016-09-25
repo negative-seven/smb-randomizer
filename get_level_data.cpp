@@ -42,11 +42,6 @@ std::vector<std::string> getNormalLevelNames()
 		}
 	}
 
-	for (int i = 1; i < 4; i++)
-	{
-		levelNames.push_back("4bit" + std::to_string(i) + extension);
-	}
-
 	for (int i = 2; i < 5; i++)
 	{
 		for (int j = 1; j < 4; j++)
