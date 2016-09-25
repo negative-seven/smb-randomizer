@@ -5,3 +5,7 @@
 *.pdb
 *.vcxproj
 *.filters
+*.asm
+*.cache
+*.resources
+*.user
