@@ -1,5 +1,6 @@
 #include "window.h"
 
+[System::STAThread]
 int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show)
 {
 	// Open window
