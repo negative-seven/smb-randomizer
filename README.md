@@ -3,7 +3,7 @@ Inspired by randomizers for games such as Pokémon, and Super Mario World, this 
 
 Note: This will not update any Steam leaderboard best times, only your save file's best times. 
 
-[Download link](https://github.com/negative-seven/smb-randomizer/releases)
+[Download links](https://github.com/negative-seven/smb-randomizer/releases)
 
 ## Known issues
 * Touching a warp zone may freeze the game.
