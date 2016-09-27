@@ -33,19 +33,19 @@ void randomize_game(unsigned int seed)
 
 	baseAddress = getBaseAddress(handle_process, processName);
 
-	//// Overwrite part of code for saving level times.
+	//// Overwrite code for saving level times.
 
 	/*
-	Find code at 0x120C9:
-	fld dword ptr [eax+0x37C]
+	Find code at 0x120D6:
+	jne SuperMeatBoy.exe+0x12139
 	*/
 
-	bytes_old = { '\xD9', '\x80', '\x7C', '\x03', '\x00', '\x00' };
-	bytes_new = { '\xE8', '\x42', '\xFF', '\xFF', '\xFF', '\x90' };
+	bytes_old = { '\x75', '\x61' };
+	bytes_new = { '\x90', '\x90' };
 
-	offset_base = 0x120C9;
+	offset_base = 0x120D6;
 
-	temp = readMemoryBytes(handle_process, baseAddress + offset_base, 6);
+	temp = readMemoryBytes(handle_process, baseAddress + offset_base, 2);
 	if (temp != bytes_old && temp != bytes_new)
 	{
 		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
@@ -55,37 +55,8 @@ void randomize_game(unsigned int seed)
 	{
 		/*
 		Replace code with:
-		call SuperMeatBoy.exe+0x12010
 		nop
-		*/
-
-		writeMemoryBytes(handle_process, baseAddress + offset_base, bytes_new);
-	}
-
-	/*
-	Find code at 0x12010:
-	ret
-	int3  <x13>
-	*/
-
-	bytes_old = { '\xC3', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC', '\xCC' };
-	bytes_new = { '\xC7', '\x44', '\x24', '\x28', '\x00', '\x00', '\x80', '\x47', '\xD9', '\x80', '\x7C', '\x03', '\x00', '\x00', '\xC3' };
-
-	offset_base = 0x12010;
-
-	temp = readMemoryBytes(handle_process, baseAddress + offset_base, 15);
-	if (temp != bytes_old && temp != bytes_new)
-	{
-		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
-		return;
-	}
-	else
-	{
-		/*
-		Replace code with:
-		mov [esp+0x28], 0x47800000
-		fld dword ptr [eax+0x37C]
-		ret
+		nop
 		*/
 
 		writeMemoryBytes(handle_process, baseAddress + offset_base, bytes_new);
