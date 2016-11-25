@@ -9,3 +9,6 @@
 *.cache
 *.resources
 *.user
+*.pch
+*.res
+*.enc
