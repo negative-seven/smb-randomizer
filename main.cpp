@@ -10,6 +10,8 @@
 #include "randomize_game.h"
 #include "utils.h"
 
+#include "resource.h"
+
 #define ID_INPUTBOX 0
 #define ID_CHECKBOX 1
 #define ID_BUTTON 2
@@ -72,6 +74,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				else
 				{
 					char seed_temp[16] = "";
+					inputbox = GetDlgItem(hWnd, ID_INPUTBOX);
 					SendMessage(inputbox, WM_GETTEXT, 16, (LPARAM)seed_temp);
 					seed = (unsigned int)seed_temp;
 				}
@@ -80,7 +83,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			case ID_CHECKBOX:
 				checkbox = GetDlgItem(hWnd, ID_CHECKBOX);
-				SendMessage(checkbox, BM_SETCHECK, !SendMessage(checkbox, BM_GETCHECK, NULL, NULL), NULL);
+				inputbox = GetDlgItem(hWnd, ID_INPUTBOX);
+				BOOL checkbox_state = !SendMessage(checkbox, BM_GETCHECK, NULL, NULL);
+				SendMessage(checkbox, BM_SETCHECK, checkbox_state, NULL);
+				SendMessage(inputbox, EM_SETREADONLY, checkbox_state, NULL);
 				break;
 			}
 	default:
@@ -105,7 +111,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wndClassEx.cbClsExtra = 0;
 	wndClassEx.cbWndExtra = 0;
 	wndClassEx.hInstance = hInstance;
-	wndClassEx.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
+	wndClassEx.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 	wndClassEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wndClassEx.hbrBackground = CreateSolidBrush(RGB(0xF0, 0xF0, 0xF0));
 	wndClassEx.lpszMenuName = NULL;
@@ -117,7 +123,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 1;
 	}
 
-	hWnd = CreateWindow(window, window_title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 226, 106, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(window, window_title, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, 226, 106, NULL, NULL, hInstance, NULL);
 
 	if (!hWnd)
 	{

@@ -12,3 +12,5 @@
 *.pch
 *.res
 *.enc
+*.aps
+*.ico
