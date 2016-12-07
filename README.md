@@ -9,4 +9,3 @@ Note: This will not update any Steam leaderboard best times, only your save file
 * Touching a warp zone may freeze the game.
 * Finishing a warp zone may freeze the game.
 * Bandage Girl sprite is larger in warp zone levels.
-* Custom seeds do not work as intended in v0.03.

@@ -76,7 +76,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					char seed_temp[16] = "";
 					inputbox = GetDlgItem(hWnd, ID_INPUTBOX);
 					SendMessage(inputbox, WM_GETTEXT, 16, (LPARAM)seed_temp);
-					seed = (unsigned int)seed_temp;
+					seed = std::stoi(seed_temp);
 				}
 				randomize_game(seed);
 				break;
