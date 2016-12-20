@@ -64,7 +64,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			switch (LOWORD(wParam))
 			{
 			case ID_BUTTON:
-				int seed;
+				unsigned int seed;
 				
 				checkbox = GetDlgItem(hWnd, ID_CHECKBOX);
 				if (SendMessage(checkbox, BM_GETCHECK, NULL, NULL))
