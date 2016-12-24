@@ -2,22 +2,17 @@
 #include "handle_memory.h"
 #include "randomize.h"
 
-void randomize_game(unsigned int seed)
+void randomize_levels(unsigned int seed)
 {
 	HANDLE handle_process;
 	const std::string windowName = "Super Meat Boy";
 	const std::string processName = "SuperMeatBoy.exe";
 	std::vector<std::string> levelNames;
 	std::vector<char> temp;
-	unsigned int baseAddress, pointer1, pointer2, pointer3;
-	unsigned int offset_base = 0x2DA120;
-	unsigned int offset1 = 0x18;
-	unsigned int offset2 = 0x0;
-	unsigned int offset3 = 0x0;
+	unsigned int baseAddress, pointer1, pointer2, pointer3, offset_temp;
 	std::vector<unsigned int> pointers_new;
 	std::vector<unsigned int> offsets;
-	const unsigned int searchLimit = 0x1000;
-	std::vector<char> bytes_old, bytes_new;
+	std::vector<char> bytes_original, bytes_new;
 
 	//// Open process
 
@@ -33,33 +28,31 @@ void randomize_game(unsigned int seed)
 
 	baseAddress = getBaseAddress(handle_process, processName);
 
-	//// Overwrite code for saving level times.
+	//// Overwrite asm for saving level times.
 
 	/*
-	Find code at 0x120D6:
-	jne SuperMeatBoy.exe+0x12139
+	Replace asm at SMB+0x120D6:
+
+	jne SMB+0x12139
+
+	with:
+
+	nop
+	nop
 	*/
 
-	bytes_old = { '\x75', '\x61' };
+	bytes_original = { '\x75', '\x61' };
 	bytes_new = { '\x90', '\x90' };
 
-	offset_base = 0x120D6;
-
-	temp = readMemoryBytes(handle_process, baseAddress + offset_base, 2);
-	if (temp != bytes_old && temp != bytes_new)
+	temp = readMemoryBytes(handle_process, baseAddress + 0x120D6, 2);
+	if (temp == bytes_original)
+	{
+		writeMemoryBytes(handle_process, baseAddress + 0x120D6, bytes_new);
+	}
+	else if (temp != bytes_new)
 	{
 		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
 		return;
-	}
-	else
-	{
-		/*
-		Replace code with:
-		nop
-		nop
-		*/
-
-		writeMemoryBytes(handle_process, baseAddress + offset_base, bytes_new);
 	}
 
 	//// Overwrite level name pointers
@@ -68,48 +61,45 @@ void randomize_game(unsigned int seed)
 
 	levelNames = getNormalLevelNames();
 
-	offset_base = 0x2DA120;
-	offset1 = 0x18;
-	offset2 = 0x0;
-	offset3 = 0x0;
+	pointer1 = readMemoryInt(handle_process, baseAddress + 0x2DA120);
+	pointer2 = readMemoryInt(handle_process, pointer1 + 0x18);
 
-	pointer1 = readMemoryInt(handle_process, baseAddress + offset_base);
-	pointer2 = readMemoryInt(handle_process, pointer1 + offset1);
+	offset_temp = 0x0;
 
-	while (offset2 < searchLimit)
+	while (offset_temp < 0x1000) // Limit search
 	{
-		pointer3 = readMemoryInt(handle_process, pointer2 + offset2);
+		pointer3 = readMemoryInt(handle_process, pointer2);
 
-		if (readMemoryString(handle_process, pointer3 + offset3, 7) == "Levels/")
+		if (readMemoryString(handle_process, pointer3, 7) == "Levels/")
 		{
 			break;
 		}
 
-		offset2 += 0x4;
+		offset_temp += 0x4;
 	}
 
 	// Find all level name pointers
 
-	while (offset2 < searchLimit)
+	while (offset_temp < 0x1000) // Limit search
 	{
-		pointer3 = readMemoryInt(handle_process, pointer2 + offset2);
+		pointer3 = readMemoryInt(handle_process, pointer2);
 
 		for (unsigned int i = 0; i < levelNames.size(); i++)
 		{
-			if (readMemoryString(handle_process, pointer3 + offset3 + 7) == levelNames[i])
+			if (readMemoryString(handle_process, pointer3 + 7) == levelNames[i])
 			{
-				offsets.push_back(offset2);
+				offsets.push_back(offset_temp);
 				pointers_new.push_back(pointer3);
 				break;
 			}
 		}
 
-		if (readMemoryString(handle_process, pointer3 + offset3, 7) != "Levels/")
+		if (readMemoryString(handle_process, pointer3, 7) != "Levels/")
 		{
 			break;
 		}
 
-		offset2 += 0x4;
+		offset_temp += 0x4;
 	}
 
 	// Write to level name pointers
@@ -126,4 +116,54 @@ void randomize_game(unsigned int seed)
 	closeProcess(handle_process);
 
 	MessageBox(NULL, "Randomization finished.", "Success", MB_OK);
+}
+
+void randomize_chars() // Not useable!
+{
+	HANDLE handle_process;
+	const std::string windowName = "Super Meat Boy";
+	const std::string processName = "SuperMeatBoy.exe";
+	unsigned int baseAddress;
+	std::vector<char> bytes_original, bytes_new, temp;
+
+	//// Open process
+
+	try
+	{
+		handle_process = openProcess(windowName);
+	}
+	catch (std::exception e)
+	{
+		MessageBox(NULL, "Super Meat Boy window not found.\nTry again with the game open.", "Error", MB_ICONEXCLAMATION);
+		return;
+	}
+
+	baseAddress = getBaseAddress(handle_process, processName);
+
+	//// Randomize played character
+
+	/*
+	Replace asm at SMB+0x1252F:
+
+	mov eax, [esi+0x2E4]
+	
+	with:
+
+	call SMB+0x12650
+	nop
+	*/
+
+	bytes_original = { '\x8B', '\x86', '\xE4', '\x02', '\x00', '\x00' };
+	bytes_new = { '\xE8', '\x1C', '\x01', '\x00', '\x00', '\x90' };
+
+	temp = readMemoryBytes(handle_process, baseAddress + 0x120D6, 2);
+	if (temp == bytes_original)
+	{
+		writeMemoryBytes(handle_process, baseAddress + 0x120D6, bytes_new);
+	}
+	else if (temp != bytes_new)
+	{
+		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
+		return;
+	}
 }

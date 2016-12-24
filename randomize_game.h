@@ -1,3 +1,4 @@
 #pragma once
 
-void randomize_game(unsigned int);
+void randomize_levels(unsigned int seed);
+void randomize_chars();

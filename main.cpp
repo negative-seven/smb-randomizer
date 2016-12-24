@@ -78,7 +78,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					SendMessage(inputbox, WM_GETTEXT, 16, (LPARAM)seed_temp);
 					seed = std::stoi(seed_temp);
 				}
-				randomize_game(seed);
+				randomize_levels(seed);
 				break;
 
 			case ID_CHECKBOX:
