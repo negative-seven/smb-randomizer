@@ -62,19 +62,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		#endif
 		button_settings = CreateWindow("button", temp_string.c_str(), WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 9, 62, 192, 23, hWnd, (HMENU)ID_BUTTON_SETTINGS, hInstance, NULL);
 		SendMessage(button_settings, WM_SETFONT, WPARAM(font), TRUE);
-		settings_shown = DEFAULT_BUTTON_SETTINGS;
+		showSettings = DEFAULT_BUTTON_SETTINGS;
 
 		checkbox_settings_levels = CreateWindow("button", "Randomize levels", WS_VISIBLE | WS_CHILD | BS_CHECKBOX, 11, 88, 150, 20, hWnd, (HMENU)ID_CHECKBOX_SETTINGS_LEVELS, hInstance, NULL);
 		SendMessage(checkbox_settings_levels, WM_SETFONT, WPARAM(font), TRUE);
 		SendMessage(checkbox_settings_levels, BM_SETCHECK, WPARAM(DEFAULT_CHECKBOX_SETTINGS_LEVELS), NULL);
 		ShowWindow(checkbox_settings_levels, temp_int);
-		settings_levels = DEFAULT_CHECKBOX_SETTINGS_LEVELS;
+		settings_randlevels = DEFAULT_CHECKBOX_SETTINGS_LEVELS;
 
 		checkbox_settings_chars = CreateWindow("button", "Randomize characters (unseeded)", WS_VISIBLE | WS_CHILD | BS_CHECKBOX, 11, 110, 180, 20, hWnd, (HMENU)ID_CHECKBOX_SETTINGS_CHARS, hInstance, NULL);
 		SendMessage(checkbox_settings_chars, WM_SETFONT, WPARAM(font), TRUE);
 		SendMessage(checkbox_settings_chars, BM_SETCHECK, WPARAM(DEFAULT_CHECKBOX_SETTINGS_CHARS), NULL);
 		ShowWindow(checkbox_settings_chars, temp_int);
-		settings_chars = DEFAULT_CHECKBOX_SETTINGS_CHARS;
+		settings_randchars = DEFAULT_CHECKBOX_SETTINGS_CHARS;
 
 	case WM_PAINT:
 		BeginPaint(hWnd, &paintstruct);
@@ -115,8 +115,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				button_settings = GetDlgItem(hWnd, ID_BUTTON_SETTINGS);
 				checkbox_settings_levels = GetDlgItem(hWnd, ID_CHECKBOX_SETTINGS_LEVELS);
 				checkbox_settings_chars = GetDlgItem(hWnd, ID_CHECKBOX_SETTINGS_CHARS);
-				settings_shown = !settings_shown;
-				if (settings_shown)
+				showSettings = !showSettings;
+				if (showSettings)
 				{
 					SetWindowPos(hWnd, NULL, NULL, NULL, 226, 173, SWP_NOMOVE | SWP_NOREPOSITION);
 					SetWindowText(button_settings, "Settings [-]");
@@ -133,8 +133,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case ID_BUTTON_RANDOMIZE:
 				unsigned int seed;
-				checkbox_randseed = GetDlgItem(hWnd, ID_CHECKBOX_RANDSEED);
-				if (SendMessage(checkbox_randseed, BM_GETCHECK, NULL, NULL))
+				if (settings_randseed)
 				{
 					seed = randomInt();
 				}
@@ -145,17 +144,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					SendMessage(inputbox, WM_GETTEXT, 16, (LPARAM)seed_temp);
 					seed = std::stoi(seed_temp);
 				}
-				randomize_levels(seed);
+				randomize_game(seed);
 				break;
 			case ID_CHECKBOX_SETTINGS_LEVELS:
-				settings_levels = !settings_levels;
+				settings_randlevels = !settings_randlevels;
 				checkbox_settings_levels = GetDlgItem(hWnd, ID_CHECKBOX_SETTINGS_LEVELS);
-				SendMessage(checkbox_settings_levels, BM_SETCHECK, settings_levels, NULL);
+				SendMessage(checkbox_settings_levels, BM_SETCHECK, settings_randlevels, NULL);
 				break;
 			case ID_CHECKBOX_SETTINGS_CHARS:
-				settings_chars = !settings_chars;
+				settings_randchars = !settings_randchars;
 				checkbox_settings_chars = GetDlgItem(hWnd, ID_CHECKBOX_SETTINGS_CHARS);
-				SendMessage(checkbox_settings_chars, BM_SETCHECK, settings_chars, NULL);
+				SendMessage(checkbox_settings_chars, BM_SETCHECK, settings_randchars, NULL);
 				break;
 			}
 	default:

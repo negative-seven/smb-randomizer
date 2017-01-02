@@ -1,3 +1,3 @@
 #pragma once
 
-extern bool settings_shown, settings_levels, settings_chars;
+extern bool showSettings, settings_randseed, settings_randlevels, settings_randchars;

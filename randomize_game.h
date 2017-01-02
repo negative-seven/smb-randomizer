@@ -1,4 +1,5 @@
 #pragma once
 
-void randomize_levels(unsigned int seed);
-void randomize_chars();
+#include <windows.h>
+
+int randomize_game(unsigned int seed);
