@@ -107,9 +107,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case ID_CHECKBOX_RANDSEED:
 				checkbox_randseed = GetDlgItem(hWnd, ID_CHECKBOX_RANDSEED);
 				inputbox = GetDlgItem(hWnd, ID_INPUTBOX);
-				checkbox_state = !SendMessage(checkbox_randseed, BM_GETCHECK, NULL, NULL);
-				SendMessage(checkbox_randseed, BM_SETCHECK, checkbox_state, NULL);
-				SendMessage(inputbox, EM_SETREADONLY, checkbox_state, NULL);
+				settings_randseed = !settings_randseed;
+				SendMessage(checkbox_randseed, BM_SETCHECK, settings_randseed, NULL);
+				SendMessage(inputbox, EM_SETREADONLY, settings_randseed, NULL);
 				break;
 			case ID_BUTTON_SETTINGS:
 				button_settings = GetDlgItem(hWnd, ID_BUTTON_SETTINGS);
@@ -142,7 +142,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					char seed_temp[16] = "";
 					inputbox = GetDlgItem(hWnd, ID_INPUTBOX);
 					SendMessage(inputbox, WM_GETTEXT, 16, (LPARAM)seed_temp);
-					seed = std::stoi(seed_temp);
+					try
+					{
+						seed = std::stoi(seed_temp);
+					}
+					catch (std::invalid_argument)
+					{
+						checkbox_randseed = GetDlgItem(hWnd, ID_CHECKBOX_RANDSEED);
+						inputbox = GetDlgItem(hWnd, ID_INPUTBOX);
+						settings_randseed = true;
+						SendMessage(checkbox_randseed, BM_SETCHECK, TRUE, NULL);
+						SendMessage(inputbox, EM_SETREADONLY, TRUE, NULL);
+						seed = randomInt();
+					}
 				}
 				randomize_game(seed);
 				break;
