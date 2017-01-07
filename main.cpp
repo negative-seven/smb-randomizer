@@ -133,6 +133,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case ID_BUTTON_RANDOMIZE:
 				unsigned int seed;
+				int temp_int;
 				if (settings_randseed)
 				{
 					seed = randomInt();
@@ -156,7 +157,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						seed = randomInt();
 					}
 				}
-				randomize_game(seed);
+				temp_int = randomize_game(seed);
+				switch (HIWORD(temp_int))
+				{
+				case RANDOMIZE_OK >> 16:
+					MessageBox(NULL, "Randomization finished.", "Success", MB_OK);
+					break;
+				case RANDOMIZE_NOGAME >> 16:
+					MessageBox(NULL, "Super Meat Boy window not found.\nTry again with the game open.", "Error", MB_ICONEXCLAMATION);
+					break;
+				case RANDOMIZE_INVALIDDATA >> 16:
+					MessageBox(NULL, ("Error while editing memory. ID: " + std::to_string(LOWORD(temp_int))).c_str(), "Error", MB_ICONEXCLAMATION);
+					break;
+				}
 				break;
 			case ID_CHECKBOX_SETTINGS_LEVELS:
 				settings_randlevels = !settings_randlevels;

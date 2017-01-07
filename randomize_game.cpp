@@ -2,10 +2,7 @@
 #include "global.h"
 #include "handle_memory.h"
 #include "randomize.h"
-
-#define RANDOMIZE_OK 0
-#define RANDOMIZE_NOGAME 1
-#define RANDOMIZE_INVALIDDATA 2
+#include "randomize_game.h"
 
 /*
 Function returns:
@@ -47,8 +44,7 @@ int randomize_levels(HANDLE handle_game, unsigned int seed)
 	}
 	else if (temp != bytes_new)
 	{
-		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
-		return RANDOMIZE_INVALIDDATA;
+		return RANDOMIZE_INVALIDDATA + 0;
 	}
 
 	//// Overwrite level name pointers
@@ -64,7 +60,7 @@ int randomize_levels(HANDLE handle_game, unsigned int seed)
 
 	while (offset_temp < 0x1000) // Limit search
 	{
-		pointer3 = readMemoryInt(handle_game, pointer2);
+		pointer3 = readMemoryInt(handle_game, pointer2 + offset_temp);
 
 		if (readMemoryString(handle_game, pointer3, 7) == "Levels/")
 		{
@@ -78,7 +74,7 @@ int randomize_levels(HANDLE handle_game, unsigned int seed)
 
 	while (offset_temp < 0x1000) // Limit search
 	{
-		pointer3 = readMemoryInt(handle_game, pointer2);
+		pointer3 = readMemoryInt(handle_game, pointer2 + offset_temp);
 
 		for (unsigned int i = 0; i < levelNames.size(); i++)
 		{
@@ -141,8 +137,7 @@ int randomize_chars(HANDLE handle_game) // Not useable!
 	}
 	else if (temp_chars != bytes_new)
 	{
-		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
-		return RANDOMIZE_INVALIDDATA;
+		return RANDOMIZE_INVALIDDATA + 1;
 	}
 
 	/*
@@ -186,8 +181,7 @@ int randomize_chars(HANDLE handle_game) // Not useable!
 	}
 	else if (temp_chars != bytes_new)
 	{
-		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
-		return RANDOMIZE_INVALIDDATA;
+		return RANDOMIZE_INVALIDDATA + 2;
 	}
 
 	/*
@@ -206,8 +200,7 @@ int randomize_chars(HANDLE handle_game) // Not useable!
 	}
 	else if (temp_chars != bytes_new)
 	{
-		MessageBox(NULL, "Error while editing memory.", "Error", MB_ICONEXCLAMATION);
-		return RANDOMIZE_INVALIDDATA;
+		return RANDOMIZE_INVALIDDATA + 3;
 	}
 	
 	return RANDOMIZE_OK;
@@ -224,7 +217,6 @@ int randomize_game(unsigned int seed)
 	}
 	catch (std::exception e)
 	{
-		MessageBox(NULL, "Super Meat Boy window not found.\nTry again with the game open.", "Error", MB_ICONEXCLAMATION);
 		return RANDOMIZE_NOGAME;
 	}
 
