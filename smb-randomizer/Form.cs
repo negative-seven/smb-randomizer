@@ -18,9 +18,9 @@ namespace smb_randomizer
 			InitializeComponent();
 		}
 
-		private void RandomSeedCheckBox_Changed(object sender, EventArgs e)
+		private void RandomSeedButton_Click(object sender, EventArgs e)
 		{
-			SeedTextBox.Enabled = !RandomSeedCheckBox.Checked;
+			SeedTextBox.Text = ((uint)DateTime.Now.Ticks).ToString();
 		}
 
 		private void SeedTextBox_TextChanged(object sender, EventArgs e)
@@ -47,17 +47,18 @@ namespace smb_randomizer
 			}
 
 			int runSeed;
-			if (RandomSeedCheckBox.Checked || !uint.TryParse(SeedTextBox.Text, out uint unsignedRunSeed))
+			if (!uint.TryParse(SeedTextBox.Text, out uint unsignedRunSeed))
 			{
-				RandomSeedCheckBox.Checked = true;
-				runSeed = (int)DateTime.Now.Ticks;
+				// TODO: repeated code
+				SeedTextBox.Text = ((uint)DateTime.Now.Ticks).ToString();
+				runSeed = (int)uint.Parse(SeedTextBox.Text);
 			}
 			else
 			{
 				runSeed = (int)unsignedRunSeed;
 			}
-			var random = new Random(runSeed);
 
+			var random = new Random(runSeed);
 			try
 			{
 				randomizer.DisableLeaderboards();
