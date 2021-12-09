@@ -20,7 +20,7 @@ namespace smb_randomizer
 
 		private void RandomSeedButton_Click(object sender, EventArgs e)
 		{
-			SeedTextBox.Text = ((uint)DateTime.Now.Ticks).ToString();
+			SeedTextBox.Text = ((uint)DateTime.Now.Ticks * 1251872821).ToString();
 		}
 
 		private void SeedTextBox_TextChanged(object sender, EventArgs e)
@@ -50,7 +50,7 @@ namespace smb_randomizer
 			if (!uint.TryParse(SeedTextBox.Text, out uint unsignedRunSeed))
 			{
 				// TODO: repeated code
-				SeedTextBox.Text = ((uint)DateTime.Now.Ticks).ToString();
+				SeedTextBox.Text = ((uint)DateTime.Now.Ticks * 1251872821).ToString();
 				runSeed = (int)uint.Parse(SeedTextBox.Text);
 			}
 			else
