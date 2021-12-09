@@ -44,7 +44,7 @@ namespace smb_randomizer
 
 			var baseAddress = memoryManager.GetMainModuleBaseAddress();
 			var fileListPointer = (IntPtr)memoryManager.ReadUnsignedInt(baseAddress + 0x2da120);
-			var fileListSize = memoryManager.ReadUnsignedInt(fileListPointer + 0xc);
+			var fileListSize = (int)memoryManager.ReadUnsignedInt(fileListPointer + 0xc);
 			var fileListStartPointer = (IntPtr)memoryManager.ReadUnsignedInt(fileListPointer + 0x18);
 
 			// Find all matching level name pointers
@@ -61,6 +61,7 @@ namespace smb_randomizer
 			}
 
 			// Write shuffled level name pointers
+			fileNamePointers = fileNamePointers.OrderBy(p => memoryManager.ReadNullTerminatedString(p, 256)).ToList(); // sort to reach consistent state before shuffling
 			new Random(seed).ShuffleInPlace(ref fileNamePointers);
 			for (int i = 0; i < fileNamePointers.Count; i++)
 			{
